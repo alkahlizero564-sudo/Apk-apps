@@ -20,13 +20,14 @@ class PresetSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
-              const Icon(Icons.auto_awesome, color: Color(0xFF00C896), size: 18),
+              const Icon(Icons.auto_awesome_rounded,
+                  color: Color(0xFF00C896), size: 18),
               const SizedBox(width: 8),
               Text(
-                'قوالب المونتاج الذكية (Smart Presets)',
+                'قوالب المونتاج الاحترافية',
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -34,9 +35,9 @@ class PresetSelector extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 10),
         SizedBox(
-          height: 104,
+          height: 112,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -46,70 +47,105 @@ class PresetSelector extends StatelessWidget {
               final isSelected = preset.id == activePresetId;
 
               return Container(
-                width: 140,
-                margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                width: 145,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
                 child: InkWell(
                   onTap: () => onSelectPreset(preset),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? const Color(0xFF00C896).withValues(alpha: 0.18)
-                          : (isDark ? const Color(0xFF1E293B) : Colors.white),
-                      borderRadius: BorderRadius.circular(14),
+                          ? const Color(0xFF00C896).withValues(alpha: 0.16)
+                          : (isDark
+                              ? const Color(0xFF151D2F)
+                              : Colors.white),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
                             ? const Color(0xFF00C896)
-                            : (isDark ? Colors.white12 : Colors.black12),
+                            : (isDark
+                                ? const Color(0xFF1E293B)
+                                : const Color(0xFFE2E8F0)),
                         width: isSelected ? 2 : 1,
                       ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: const Color(0xFF00C896)
+                                    .withValues(alpha: 0.25),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              preset.icon,
-                              size: 20,
-                              color: isSelected
-                                  ? const Color(0xFF00C896)
-                                  : (isDark ? Colors.white70 : Colors.blueGrey),
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF00C896)
+                                    : (isDark
+                                        ? const Color(0xFF1E293B)
+                                        : const Color(0xFFF1F5F9)),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                preset.icon,
+                                size: 16,
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isDark
+                                        ? Colors.white70
+                                        : Colors.blueGrey),
+                              ),
                             ),
                             const Spacer(),
                             if (isSelected)
                               const Icon(
                                 Icons.check_circle_rounded,
-                                size: 16,
+                                size: 18,
                                 color: Color(0xFF00C896),
                               ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          preset.titleAr,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected
-                                ? const Color(0xFF00C896)
-                                : (isDark ? Colors.white : Colors.black87),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          preset.defaultMusicTitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: isDark ? Colors.white54 : Colors.black54,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              preset.titleAr,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: isSelected
+                                    ? const Color(0xFF00C896)
+                                    : (isDark
+                                        ? Colors.white
+                                        : const Color(0xFF0F172A)),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              preset.defaultMusicTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                color: isDark
+                                    ? Colors.white54
+                                    : Colors.blueGrey,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
