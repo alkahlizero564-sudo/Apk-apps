@@ -1,0 +1,35 @@
+name: build-awas
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/awas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Add Android platform
+        run: |
+          flutter create --platforms=android --project-name awas _scaffold
+          cp -r _scaffold/android ./android
+          rm -rf _scaffold
+          sed -i 's#<application#<uses-permission android:name="android.permission.INTERNET"/>\n    <application#' android/app/src/main/AndroidManifest.xml
+          sed -i 's#android:label="[^"]*"#android:label="Awas"#' android/app/src/main/AndroidManifest.xml
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: awas-${{ github.run_number }}
+          name: awas build ${{ github.run_number }}
+          files: apps/awas/build/app/outputs/flutter-apk/app-release.apk
