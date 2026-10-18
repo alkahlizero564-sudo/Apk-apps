@@ -148,6 +148,7 @@
       "- Use only real pub.dev packages with caret versions. pubspec.yaml must use environment sdk: '>=3.3.0 <4.0.0' and a valid lowercase snake_case package name.",
       "- Include pubspec.yaml, analysis_options.yaml, lib/main.dart and every other lib file, and one passing test in test/.",
       "- Do NOT include android/, ios/, web/ or binary files.",
+      "- If you use flutter_localizations or the intl package, write the dependency as intl: any so it matches the installed Flutter SDK. Prefer fewer, well-known packages.",
       "", FORMAT, "Begin with pubspec.yaml."
     ].join("\n");
   }
@@ -462,11 +463,38 @@
       "          cp -r _scaffold/android ./android", "          rm -rf _scaffold",
       "          sed -i 's#<application#<uses-permission android:name=\"android.permission.INTERNET\"/>\\n    <application#' android/app/src/main/AndroidManifest.xml",
       "          sed -i 's#android:label=\"[^\"]*\"#android:label=\"" + safe + "\"#' android/app/src/main/AndroidManifest.xml",
-      "      - run: flutter pub get", "      - run: flutter build apk --release",
+      "      - name: Fix known version conflicts",
+      "        run: |",
+      "          sed -i -E 's/^([[:space:]]*intl:).*/\\1 any/' pubspec.yaml",
+      "      - name: Get packages",
+      "        run: flutter pub get || flutter pub upgrade --major-versions",
+      "      - name: Signing key (created once, then reused for every build)",
+      "        run: |",
+      "          KS=\"$GITHUB_WORKSPACE/keystores/" + slug + ".jks\"",
+      "          PWF=\"$GITHUB_WORKSPACE/keystores/" + slug + ".pass\"",
+      "          mkdir -p \"$GITHUB_WORKSPACE/keystores\"",
+      "          if [ ! -f \"$KS\" ]; then",
+      "            PW=$(openssl rand -hex 16)",
+      "            keytool -genkeypair -keystore \"$KS\" -alias key -keyalg RSA -keysize 2048 -validity 36500 -storepass \"$PW\" -keypass \"$PW\" -dname \"CN=" + slug + ", O=apk apps, C=SA\"",
+      "            echo \"$PW\" > \"$PWF\"",
+      "            git -C \"$GITHUB_WORKSPACE\" config user.name apk-apps",
+      "            git -C \"$GITHUB_WORKSPACE\" config user.email apk-apps@users.noreply.github.com",
+      "            git -C \"$GITHUB_WORKSPACE\" add keystores",
+      "            git -C \"$GITHUB_WORKSPACE\" commit -m \"apk apps: signing key for " + slug + "\"",
+      "            git -C \"$GITHUB_WORKSPACE\" push",
+      "          fi",
+      "      - run: flutter build apk --release",
+      "      - name: Sign APK with the fixed key",
+      "        run: |",
+      "          SDK=\"${ANDROID_HOME:-$ANDROID_SDK_ROOT}\"",
+      "          APKSIGNER=$(ls \"$SDK\"/build-tools/*/apksigner | sort -V | tail -1)",
+      "          PW=$(cat \"$GITHUB_WORKSPACE/keystores/" + slug + ".pass\")",
+      "          \"$APKSIGNER\" sign --ks \"$GITHUB_WORKSPACE/keystores/" + slug + ".jks\" --ks-pass pass:\"$PW\" --key-pass pass:\"$PW\" --out build/app/outputs/flutter-apk/" + slug + ".apk build/app/outputs/flutter-apk/app-release.apk",
+      "          \"$APKSIGNER\" verify --print-certs build/app/outputs/flutter-apk/" + slug + ".apk",
       "      - uses: softprops/action-gh-release@v2", "        with:",
       "          tag_name: " + slug + "-${{ github.run_number }}",
       "          name: " + slug + " build ${{ github.run_number }}",
-      "          files: " + d + "/build/app/outputs/flutter-apk/app-release.apk", ""
+      "          files: " + d + "/build/app/outputs/flutter-apk/" + slug + ".apk", ""
     ].join("\n");
   }
   var lastApk = null;
