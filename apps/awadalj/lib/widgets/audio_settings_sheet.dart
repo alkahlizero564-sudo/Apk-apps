@@ -65,7 +65,7 @@ class _AudioSettingsSheetState extends State<AudioSettingsSheet> {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.bottom: 16,
+                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: Colors.grey.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(2),
