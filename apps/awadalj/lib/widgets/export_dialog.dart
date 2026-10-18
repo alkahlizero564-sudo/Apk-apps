@@ -22,24 +22,41 @@ class ExportDialog extends StatelessWidget {
     return PopScope(
       canPop: isCompleted,
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 10,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!isCompleted) ...[
-                const SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 5,
-                    color: Color(0xFF00C896),
-                  ),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 74,
+                      height: 74,
+                      child: CircularProgressIndicator(
+                        value: progress > 0 ? progress : null,
+                        strokeWidth: 6,
+                        color: const Color(0xFF00C896),
+                        backgroundColor:
+                            const Color(0xFF00C896).withValues(alpha: 0.15),
+                      ),
+                    ),
+                    Text(
+                      '$percent%',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF00C896),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'جارٍ إنتاج وحفظ المونتاج...',
+                  'جارٍ تصدير وحفظ المونتاج...',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -47,37 +64,35 @@ class ExportDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '$percent%',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF00C896),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                LinearProgressIndicator(
-                  value: progress,
-                  color: const Color(0xFF00C896),
-                  backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                ),
-                const SizedBox(height: 12),
-                Text(
                   statusText,
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                  ),
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 6,
+                    color: const Color(0xFF00C896),
+                    backgroundColor:
+                        const Color(0xFF00C896).withValues(alpha: 0.15),
+                  ),
                 ),
               ] else ...[
                 Container(
-                  width: 68,
-                  height: 68,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF00C896),
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00C896).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: 42,
+                    Icons.check_circle_rounded,
+                    color: Color(0xFF00C896),
+                    size: 54,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -90,27 +105,32 @@ class ExportDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'تمت معالجة الفيديو بأعلى جودة وتخزينه في مجلد المعرض (Gallery) بهاتفك.',
-                  style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  'تمت معالجة الفيديو بجودة عالية وتخزينه في مجلد المعرض (Gallery) بهاتفك.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                    height: 1.4,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 22),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF00C896),
                       foregroundColor: Colors.white,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
                     onPressed: onDone,
-                    icon: const Icon(Icons.done_all_rounded),
+                    icon: const Icon(Icons.done_all_rounded, size: 20),
                     label: const Text(
-                      'تم واستعراض الفيديو',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      'تم واستعراض المقطع',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ),
                 ),
