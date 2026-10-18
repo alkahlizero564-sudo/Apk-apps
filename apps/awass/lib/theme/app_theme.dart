@@ -23,7 +23,7 @@ class AppTheme {
 
     return base.copyWith(
       scaffoldBackgroundColor: surfaceLight,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardLight,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -75,7 +75,7 @@ class AppTheme {
 
     return base.copyWith(
       scaffoldBackgroundColor: bgDark,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: cardDark,
         elevation: 0,
         shape: RoundedRectangleBorder(
