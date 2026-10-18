@@ -39,18 +39,20 @@ class HomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(7),
               decoration: BoxDecoration(
-                color: const Color(0xFF00C896).withValues(alpha: 0.2),
-                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF00C896), Color(0xFF00E5FF)],
+                ),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
                 Icons.movie_creation_rounded,
-                color: Color(0xFF00C896),
-                size: 22,
+                color: Color(0xFF0B0F19),
+                size: 20,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             const Text(
               'عوض الج | Awadalj',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -60,7 +62,24 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: 'المشاريع المحفوظة',
-            icon: const Icon(Icons.folder_special_rounded),
+            icon: Stack(
+              children: [
+                const Icon(Icons.folder_special_rounded, size: 24),
+                if (provider.savedProjects.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF00C896),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -76,37 +95,46 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(color: Color(0xFF00C896)),
-                  SizedBox(height: 16),
-                  Text('جارٍ استيراد وتحليل الفيديو...'),
+                  SizedBox(height: 18),
+                  Text(
+                    'جارٍ استيراد وتحليل الفيديو...',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Hero Showcase Card
+                  // Hero Studio Banner
                   Container(
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: isDark
                             ? [
-                                const Color(0xFF1E293B),
-                                const Color(0xFF0F172A),
+                                const Color(0xFF151D2F),
+                                const Color(0xFF0B0F19),
                               ]
                             : [
-                                const Color(0xFF00C896),
                                 const Color(0xFF00897B),
+                                const Color(0xFF005b52),
                               ],
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
                       ),
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFF00A896),
+                        width: 1.2,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00C896).withValues(alpha: 0.3),
+                          color: const Color(0xFF00C896).withValues(alpha: 0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 8),
                         ),
@@ -119,7 +147,7 @@ class HomeScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withValues(alpha: 0.18),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Row(
@@ -127,45 +155,45 @@ class HomeScreen extends StatelessWidget {
                             children: [
                               Icon(Icons.auto_awesome,
                                   color: Colors.amberAccent, size: 14),
-                              SizedBox(width: 4),
+                              SizedBox(width: 5),
                               Text(
-                                'مونتاج ذكي واحترافي',
+                                'مونتاج ذكي متطور',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 11,
+                                  fontSize: 11.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 14),
                         const Text(
-                          'اصنع فيديوهات سينمائية بضغطة زر واحدة!',
+                          'اصنع فيديوهات سينمائية واحترافية بسهولة فائقة',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 21,
                             fontWeight: FontWeight.bold,
                             height: 1.3,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'أرفق الفيديو من جهازك، وسيقوم التطبيق بالقص الذكي، ومزامنة الموسيقى، وتطبيق درجات الألوان الساحرة مع حفظ المقطع النهائي في معرض الصور.',
+                          'أرفق الفيديو من جهازك، وسيقوم محرك عوض الج بالقص الذكي، ومزامنة الموسيقى، وتطبيق درجات الألوان مع الحفظ المباشر في المعرض.',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white.withValues(alpha: 0.85),
                             fontSize: 13,
-                            height: 1.4,
+                            height: 1.45,
                           ),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 20),
                         Row(
                           children: [
                             Expanded(
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: const Color(0xFF0F172A),
+                                  backgroundColor: const Color(0xFF00C896),
+                                  foregroundColor: const Color(0xFF0B0F19),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14),
                                   ),
@@ -175,12 +203,12 @@ class HomeScreen extends StatelessWidget {
                                 ),
                                 onPressed: () => _pickAndStart(context),
                                 icon: const Icon(Icons.video_call_rounded,
-                                    color: Color(0xFF00C896)),
+                                    size: 22),
                                 label: const Text(
                                   'إرفاق فيديو جديد',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                                    fontSize: 14.5,
                                   ),
                                 ),
                               ),
@@ -190,26 +218,36 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
-                  // Quick test with sample video
+                  // Quick test sample action
                   OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(
-                          color: Color(0xFF00C896), width: 1.5),
+                      side: BorderSide(
+                        color: isDark
+                            ? const Color(0xFF00C896)
+                            : const Color(0xFF00897B),
+                        width: 1.5,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                     onPressed: () => _openSample(context),
-                    icon: const Icon(Icons.play_circle_outline_rounded,
-                        color: Color(0xFF00C896)),
-                    label: const Text(
+                    icon: Icon(
+                      Icons.play_circle_outline_rounded,
+                      color: isDark
+                          ? const Color(0xFF00C896)
+                          : const Color(0xFF00897B),
+                    ),
+                    label: Text(
                       'تجربة عينة فيديو فورية (بدون رفع)',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF00C896),
+                        color: isDark
+                            ? const Color(0xFF00C896)
+                            : const Color(0xFF00897B),
                       ),
                     ),
                   ),
@@ -219,14 +257,14 @@ class HomeScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: Colors.red.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                             color: Colors.red.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline,
+                          const Icon(Icons.error_outline_rounded,
                               color: Colors.red, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
@@ -241,11 +279,116 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
 
+                  // Saved Projects Quick Bar
+                  if (provider.savedProjects.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'المشاريع الأخيرة بالمعرض',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SavedProjectsScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text('عرض الكل'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 94,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: provider.savedProjects.length > 5
+                            ? 5
+                            : provider.savedProjects.length,
+                        itemBuilder: (context, idx) {
+                          final p = provider.savedProjects[idx];
+                          return Container(
+                            width: 170,
+                            margin: const EdgeInsets.only(left: 10),
+                            child: InkWell(
+                              onTap: () {
+                                provider.openExistingProject(p);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const EditorScreen(),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(14),
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? const Color(0xFF151D2F)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? const Color(0xFF1E293B)
+                                        : const Color(0xFFE2E8F0),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.movie_filter_rounded,
+                                          size: 16,
+                                          color: Color(0xFF00C896),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            p.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      '${p.effectiveDuration.toStringAsFixed(1)} ثانية',
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 28),
 
-                  // Feature Cards Grid
+                  // Feature cards
                   Text(
-                    'مميزات المونتاج في عوض الج',
+                    'أدوات المونتاج المتوفرة',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -256,25 +399,25 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.movie_filter_rounded,
                     title: 'تدرج لوني سينمائي (Color Grading)',
                     subtitle:
-                        'فلاتر Teal & Orange، وأفلام كوداك الكلاسيكية، ونمط الباستيل الهادئ.',
+                        'فلاتر Teal & Orange، والذهبي الدافئ، وألوان السايبربانك والباستيل.',
                   ),
                   _FeatureItem(
                     icon: Icons.music_note_rounded,
-                    title: 'مكتبة مسارات صوتية وموسيقى ترند',
+                    title: 'مكتبة مسارات صوتية وتصفية الصوت',
                     subtitle:
-                        'مزامنة الإيقاع التلقائي وعزل ضوضاء الرياح والمحيط بالذكاء الاصطناعي.',
+                        'مزامنة الموسيقى التصويرية وعزل ضوضاء الرياح بالذكاء الاصطناعي.',
                   ),
                   _FeatureItem(
                     icon: Icons.aspect_ratio_rounded,
                     title: 'تنسيق أبعاد تلقائي لجميع المنصات',
                     subtitle:
-                        'تكييف الفيديو فورا لأبعاد Reels وTikTok (9:16) أو YouTube (16:9).',
+                        'تكييف الفيديو فورا لريلز وتيك توك (9:16) أو يوتيوب (16:9).',
                   ),
                   _FeatureItem(
-                    icon: Icons.download_for_offline_rounded,
-                    title: 'حفظ فائق السرعة في المعرض',
+                    icon: Icons.subtitles_rounded,
+                    title: 'تسميات توضيحية وعلامة مائية',
                     subtitle:
-                        'تصدير بجودة عالية بدون ضياع الإطارات مع إضافة علامتك المائية الخاصة.',
+                        'توليد التسميات التلقائية مع إضافة علامتك المائية الشخصية للحماية.',
                   ),
                 ],
               ),
@@ -303,10 +446,10 @@ class _FeatureItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        color: isDark ? const Color(0xFF151D2F) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.white12 : Colors.black12,
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
         ),
       ),
       child: Row(
@@ -317,7 +460,7 @@ class _FeatureItem extends StatelessWidget {
               color: const Color(0xFF00C896).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF00C896), size: 24),
+            child: Icon(icon, color: const Color(0xFF00C896), size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -335,7 +478,7 @@ class _FeatureItem extends StatelessWidget {
                   subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.grey,
-                    height: 1.3,
+                    height: 1.35,
                   ),
                 ),
               ],
