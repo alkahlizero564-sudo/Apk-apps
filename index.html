@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>apk apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>apk apps</h1>
+    <p class="sub">ولّد تطبيقين Flutter بالذكاء الاصطناعي، اربطهما بـ Supabase، وابنِ ملف APK من داخل التطبيق.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="القوائم">
+    <button role="tab" id="tab-keys" data-tab="keys" aria-selected="true">المفاتيح</button>
+    <button role="tab" id="tab-codes" data-tab="codes" aria-selected="false">الأكواد</button>
+    <button role="tab" id="tab-build" data-tab="build" aria-selected="false">البناء</button>
+  </nav>
+
+  <!-- ===== المفاتيح ===== -->
+  <section class="pane" id="pane-keys">
+    <nav class="tabs sub" id="sub-keys" aria-label="أقسام المفاتيح">
+      <button data-sub="0" aria-selected="true">مفاتيح الخدمات</button>
+      <button data-sub="1" aria-selected="false">مفاتيح إضافية</button>
+    </nav>
+    <div class="panel" id="keysMain">
+      <h2>مفاتيح الخدمات</h2>
+      <p class="warn">تُحفظ المفاتيح في متصفح هذا الجهاز فقط ولا تُرسل إلا للخدمة الخاصة بها. لا تفتح هذا الملف على جهاز لا تثق به.</p>
+      <div class="grid" id="keyGrid"></div>
+      <div class="row">
+        <button class="btn small" data-test="github" type="button">اختبار GitHub</button>
+        <button class="btn small" data-test="supabase" type="button">اختبار Supabase</button>
+        <button class="btn small" data-test="claude" type="button">اختبار Claude</button>
+        <button class="btn small" data-test="gemini" type="button">اختبار Gemini</button>
+        <span class="note" id="testOut" role="status" aria-live="polite"></span>
+      </div>
+      <p class="note">المفاتيح الإضافية لـ Gemini تُستخدم تلقائياً بالترتيب إذا وصل المفتاح السابق لحد الاستخدام أو لم يعمل.</p>
+      <p class="note">صلاحيات GitHub المطلوبة للتوكن: <code dir="ltr">repo</code> و <code dir="ltr">workflow</code>. يُنشأ المشروع تلقائياً (خاص) إن لم يكن موجوداً.</p>
+    </div>
+    <div class="panel" id="keysExtra" hidden>
+      <h2>مفاتيح إضافية</h2>
+      <div id="extras" class="field"></div>
+      <div><button class="btn small" id="addExtra" type="button">إضافة خانة</button></div>
+    </div>
+  </section>
+
+  <!-- ===== الأكواد ===== -->
+  <section class="pane" id="pane-codes" hidden></section>
+
+  <!-- ===== البناء ===== -->
+  <section class="pane" id="pane-build" hidden>
+    <div class="panel">
+      <h2>بناء ملف APK</h2>
+      <p class="note">يدفع التطبيق الكود إلى مشروع GitHub، ويشغّل البناء هناك (GitHub Actions)، ثم يحمّل الـ APK الناتج هنا. يستغرق البناء عادة من 5 إلى 10 دقائق.</p>
+      <div class="grid">
+        <div class="field">
+          <label class="lbl" for="buildApp">أي تطبيق تبني؟</label>
+          <select id="buildApp"></select>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="buildGo" type="button">ابنِ APK</button>
+        <span class="note" id="buildState" role="status" aria-live="polite"></span>
+      </div>
+      <div class="progress">
+        <div class="log" id="buildLog"></div>
+        <div class="row" id="buildResult" hidden>
+          <button class="btn primary" id="apkDl" type="button">تحميل APK</button>
+          <a id="relLink" target="_blank" rel="noopener">صفحة الإصدار على GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<dialog id="prevDlg" aria-label="معاينة التطبيق">
+  <div class="dlg-bar"><strong>معاينة تقريبية</strong><button class="btn small" id="prevClose" type="button">إغلاق</button></div>
+  <iframe id="prevFrame" sandbox="allow-scripts" title="معاينة"></iframe>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+        </html>
