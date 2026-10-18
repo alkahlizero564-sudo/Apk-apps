@@ -1,0 +1,19 @@
+
+lib/widgets/audio_settings_sheet.dart:68:44: Error: Expected '(' after this.
+                  margin: const EdgeInsets.bottom: 16,
+                                           ^^^^^^
+lib/widgets/audio_settings_sheet.dart:68:44: Error: Couldn't find constructor 'EdgeInsets.bottom'.
+                  margin: const EdgeInsets.bottom: 16,
+                                           ^^^^^^
+lib/widgets/audio_settings_sheet.dart:68:50: Error: Expected ')' before this.
+                  margin: const EdgeInsets.bottom: 16,
+                                                 ^
+Target kernel_snapshot_program failed: Exception
+
+--
+
+* What went wrong:
+Execution failed for task ':app:compileFlutterBuildRelease'.
+> Process 'command '/opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter/bin/flutter'' finished with non-zero exit value 1
+
+* Try:
