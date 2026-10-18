@@ -1,0 +1,6 @@
+
+* What went wrong:
+Execution failed for task ':file_picker:checkReleaseAarMetadata'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckAarMetadataWorkAction
+   > An issue was found when checking AAR metadata:
+
