@@ -302,7 +302,7 @@
     det.hidden = true;
     c.appendChild(acc(i, "sb", "3. الربط بـ Supabase", false, [
       el("p", { class: "note", text: "ينشئ SQL للجدول والصلاحيات، يعدّل الكود، وينفّذ SQL على مشروعك." }),
-      el("div", { class: "row" }, [el("button", { class: "btn", id: "link-" + i, type: "button", text: "ربط التطبيق عبر Supabase" }), el("button", { class: "btn", id: "both-" + i, type: "button", text: "ربط التطبيقين عبر Supabase" })]), det]));
+      el("div", { class: "row" }, [el("button", { class: "btn", id: "link-" + i, type: "button", text: "ربط التطبيق عبر Supabase" })]), det]));
     c.appendChild(el("div", { class: "log", id: "log-" + i }));
     return c;
   }
@@ -348,20 +348,26 @@
       } catch (e) { logTo($("log-" + i), errMsg(e), "e"); }
     });
     $("link-" + i).onclick = busy($("link-" + i), function () { return linkApps([i], false, i); });
-    $("both-" + i).onclick = busy($("both-" + i), function () { return linkApps([0, 1], true, i); });
     $("sqlcopy-" + i).onclick = async function () { try { await navigator.clipboard.writeText(a.sql); this.textContent = "تم النسخ"; } catch (e) { this.textContent = "حدد النص وانسخه"; } };
   }
   $("prevClose").onclick = function () { $("prevDlg").close(); $("prevFrame").srcdoc = ""; };
 
   function renderCodes() {
     var p = $("pane-codes"); p.textContent = "";
-    var bar = el("nav", { class: "tabs sub", "aria-label": "التطبيقات" }), cards = [];
+    var bar = el("nav", { class: "tabs sub", "aria-label": "التطبيقات" }), cards = [], btns = [], cur = 0;
+    function show(i) {
+      cur = i;
+      cards.forEach(function (x, j) { x.hidden = j !== i; });
+      btns.forEach(function (y, j) { y.setAttribute("aria-selected", j === i ? "true" : "false"); });
+    }
     [0, 1].forEach(function (i) {
       var b = el("button", { type: "button", text: "التطبيق " + ORD[i], "aria-selected": i === 0 ? "true" : "false" });
-      var c = card(i); c.hidden = i !== 0; cards.push(c);
-      b.onclick = function () { cards.forEach(function (x, j) { x.hidden = j !== i; }); Array.prototype.forEach.call(bar.children, function (y, j) { y.setAttribute("aria-selected", j === i ? "true" : "false"); }); };
-      bar.appendChild(b);
+      var c = card(i); c.hidden = i !== 0; cards.push(c); btns.push(b);
+      b.onclick = function () { show(i); };
     });
+    var both = el("button", { type: "button", class: "linkboth", id: "both", text: "ربط التطبيقين عبر Supabase" });
+    both.onclick = busy(both, function () { return linkApps([0, 1], true, cur); });
+    bar.appendChild(btns[0]); bar.appendChild(both); bar.appendChild(btns[1]);
     p.appendChild(bar); cards.forEach(function (c) { p.appendChild(c); });
     bindCard(0); bindCard(1);
   }
@@ -528,3 +534,4 @@
 
   renderKeys(); renderCodes(); renderBuildSelect(); showTab(S.tab || "keys");
 })();
+ 
