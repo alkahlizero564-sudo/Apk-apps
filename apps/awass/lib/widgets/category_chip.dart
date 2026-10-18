@@ -29,7 +29,7 @@ class CategoryFilterChip extends StatelessWidget {
                 size: 16,
                 color: isSelected
                     ? Colors.white
-                    : (isDark ? Colors.white70 : Colors.black82),
+                    : (isDark ? Colors.white70 : Colors.black87),
               )
             : null,
         label: Text(label),
