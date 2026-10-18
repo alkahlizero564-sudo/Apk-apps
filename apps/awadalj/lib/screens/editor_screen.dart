@@ -323,13 +323,19 @@ class EditorScreen extends StatelessWidget {
                         DropdownButton<double>(
                           value: project.playbackSpeed,
                           underline: const SizedBox(),
-                          items: const [
-                            DropdownMenuItem(value: 0.5, child: Text('0.5x بطيء')),
-                            DropdownMenuItem(value: 0.75, child: Text('0.75x')),
-                            DropdownMenuItem(value: 1.0, child: Text('1.0x عادي')),
-                            DropdownMenuItem(value: 1.25, child: Text('1.25x')),
-                            DropdownMenuItem(value: 1.5, child: Text('1.5x سريع')),
-                            DropdownMenuItem(value: 2.0, child: Text('2.0x فائق')),
+                          items: [
+                            if (![0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
+                                .contains(project.playbackSpeed))
+                              DropdownMenuItem(
+                                value: project.playbackSpeed,
+                                child: Text('${project.playbackSpeed}x'),
+                              ),
+                            const DropdownMenuItem(value: 0.5, child: Text('0.5x بطيء')),
+                            const DropdownMenuItem(value: 0.75, child: Text('0.75x')),
+                            const DropdownMenuItem(value: 1.0, child: Text('1.0x عادي')),
+                            const DropdownMenuItem(value: 1.25, child: Text('1.25x')),
+                            const DropdownMenuItem(value: 1.5, child: Text('1.5x سريع')),
+                            const DropdownMenuItem(value: 2.0, child: Text('2.0x فائق')),
                           ],
                           onChanged: (speed) {
                             if (speed != null) {
