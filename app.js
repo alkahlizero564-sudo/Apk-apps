@@ -43,6 +43,10 @@
     return m;
   }
 
+  function fixDart(p, c) {
+    if (!/\.dart$/i.test(p)) return c;
+    return c.replace(/\bCardTheme\(/g, "CardThemeData(").replace(/\bDialogTheme\(/g, "DialogThemeData(").replace(/\bTabBarTheme\(/g, "TabBarThemeData(").replace(/\bColors\.gray\b/g, "Colors.grey");
+  }
   function parseFiles(text) {
     var out = [], re = /^=== FILE: (.+?) ===\s*$/gm, m, marks = [];
     while ((m = re.exec(text))) marks.push({ path: m[1].trim().replace(/^\/+/, ""), start: re.lastIndex, head: m.index });
@@ -50,7 +54,7 @@
       var end = i + 1 < marks.length ? marks[i + 1].head : text.length;
       var body = text.slice(marks[i].start, end).replace(/^\r?\n/, "");
       body = body.replace(/^```[a-z]*\r?\n/i, "").replace(/\r?\n```\s*$/i, "").replace(/\s+$/, "") + "\n";
-      out.push({ path: marks[i].path, content: body });
+      out.push({ path: marks[i].path, content: fixDart(marks[i].path, body) });
     }
     return out;
   }
@@ -241,9 +245,7 @@
     if (!k) throw new Error("لم أجد مفتاح anon في المشروع.");
     return k.api_key;
   }
-  async function sbRun(sql) { return sbApi("/v1/projects/" + S.keys.sb_ref + "/database/query", { method: "POST", body: JSON.stringify({ query: sql }) }); }
-
-  /* ---------- GitHub ---------- */
+  async function sbRun(sql) { return sbApi("/v1/projects/" + S.keys.sb_ref + "/database/query", { method: "POST", body: JSON.stringify({ query: sql }) }); }  /* ---------- GitHub ---------- */
   async function gh(path, opts) {
     return fetch("https://api.github.com" + path, Object.assign({}, opts, { headers: Object.assign({ Authorization: "Bearer " + S.keys.gh_token, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }, (opts || {}).headers) }));
   }
@@ -557,6 +559,9 @@
       "      - name: Fix known version conflicts",
       "        run: |",
       "          sed -i -E 's/^([[:space:]]*intl:).*/\\1 any/' pubspec.yaml",
+      "      - name: Fix known API renames",
+      "        run: |",
+      "          find lib -name '*.dart' -exec sed -i -E 's/\\bCardTheme\\(/CardThemeData(/g; s/\\bDialogTheme\\(/DialogThemeData(/g; s/\\bTabBarTheme\\(/TabBarThemeData(/g; s/\\bColors\\.gray\\b/Colors.grey/g' {} +",
       "      - name: Get packages",
       "        run: |",
       "          set -o pipefail",
