@@ -70,24 +70,49 @@
   }
 
   /* ---------- الذكاء الاصطناعي ---------- */
-  async function ai(provider, prompt) {
-    var K = S.keys, res, data;
+  async function readSSE(res, onData) {
+    var reader = res.body.getReader(), dec = new TextDecoder(), buf = "";
+    while (true) {
+      var r = await reader.read();
+      if (r.done) break;
+      buf += dec.decode(r.value, { stream: true });
+      var idx;
+      while ((idx = buf.search(/\r?\n\r?\n/)) >= 0) {
+        var block = buf.slice(0, idx);
+        buf = buf.slice(idx).replace(/^\r?\n\r?\n/, "");
+        block.split(/\r?\n/).forEach(function (line) {
+          if (line.indexOf("data:") !== 0) return;
+          var d = line.slice(5).trim();
+          if (!d || d === "[DONE]") return;
+          try { onData(JSON.parse(d)); } catch (e) {}
+        });
+      }
+    }
+  }
+  async function ai(provider, prompt, onProgress) {
+    var K = S.keys, res, data, text = "";
+    function tick() { if (onProgress) onProgress(text.length); }
     if (provider === "gemini") {
       var gkeys = [K.gemini, K.gemini_x1, K.gemini_x2, K.gemini_x3].filter(Boolean);
       if (!gkeys.length) throw new Error("أدخل مفتاح Gemini في قائمة المفاتيح.");
       var lastErr;
       for (var gi = 0; gi < gkeys.length; gi++) {
-        res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(K.gemini_model || "gemini-3.8-flash") + ":generateContent", {
+        res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(K.gemini_model || "gemini-3.8-flash") + ":streamGenerateContent?alt=sse", {
           method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": gkeys[gi] },
           body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 32000 } })
         });
-        data = await res.json().catch(function () { return {}; });
         if (res.ok) {
-          var parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
-          var t = parts.map(function (p) { return p.text || ""; }).join("");
-          if (!t) throw new Error("Gemini لم يرجع نصاً.");
-          return t;
+          var gerr = "";
+          await readSSE(res, function (d) {
+            if (d.error) { gerr = d.error.message || "error"; return; }
+            var parts = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts) || [];
+            parts.forEach(function (p) { if (p.text) text += p.text; });
+            tick();
+          });
+          if (!text) throw new Error("Gemini: " + (gerr || "لم يرجع نصاً."));
+          return text;
         }
+        data = await res.json().catch(function () { return {}; });
         lastErr = new Error("Gemini: " + ((data.error && data.error.message) || res.status));
         if (![400, 401, 403, 429, 503].includes(res.status) || gi === gkeys.length - 1) break;
         if (res.status === 400 && !/API key/i.test(lastErr.message)) break;
@@ -98,11 +123,16 @@
     res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-api-key": K.claude, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-      body: JSON.stringify({ model: K.claude_model || "claude-sonnet-5-5", max_tokens: 16000, messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({ model: K.claude_model || "claude-sonnet-5-5", max_tokens: 16000, stream: true, messages: [{ role: "user", content: prompt }] })
     });
-    data = await res.json().catch(function () { return {}; });
-    if (!res.ok) throw new Error("Claude: " + ((data.error && data.error.message) || res.status));
-    return (data.content || []).filter(function (c) { return c.type === "text"; }).map(function (c) { return c.text; }).join("");
+    if (!res.ok) { data = await res.json().catch(function () { return {}; }); throw new Error("Claude: " + ((data.error && data.error.message) || res.status)); }
+    var cerr = "";
+    await readSSE(res, function (d) {
+      if (d.type === "content_block_delta" && d.delta && d.delta.text) { text += d.delta.text; tick(); }
+      else if (d.type === "error") cerr = (d.error && d.error.message) || "error";
+    });
+    if (!text) throw new Error("Claude: " + (cerr || "لم يرجع نصاً."));
+    return text;
   }
 
   var FORMAT = "OUTPUT FORMAT (strict): output only files, no prose before or after, no markdown fences. Each file starts with a line exactly like\n=== FILE: lib/main.dart ===\nfollowed by the full file content.";
@@ -193,6 +223,7 @@
     node.appendChild(line);
     while (node.childNodes.length > 80) node.removeChild(node.firstChild);
     node.scrollTop = node.scrollHeight;
+    return line;
   }
   function logApps(idxs, msg, cls) { idxs.forEach(function (i) { logTo($("log-" + i), msg, cls); }); }
 
@@ -318,9 +349,9 @@
 
     $("gen-" + i).onclick = busy($("gen-" + i), async function () {
       if (!a.desc.trim()) return logTo($("log-" + i), "اكتب وصف التطبيق أولاً.", "e");
-      logTo($("log-" + i), "جارٍ توليد الكود بواسطة " + a.provider + " (قد يستغرق دقيقة)...");
+      var pl = logTo($("log-" + i), "جارٍ توليد الكود بواسطة " + a.provider + " ...");
       try {
-        var files = parseFiles(await ai(a.provider, genPrompt(a)));
+        var files = parseFiles(await ai(a.provider, genPrompt(a), function (n) { pl.textContent = "جارٍ الكتابة... " + n + " حرف"; }));
         if (!files.length) throw new Error("لم يرجع الذكاء الاصطناعي ملفات.");
         editing[i] = false; setCode(i, serialize(files));
         logTo($("log-" + i), "تم توليد " + files.length + " ملف.", "g");
@@ -330,9 +361,9 @@
     $("editgo-" + i).onclick = busy($("editgo-" + i), async function () {
       var ins = $("editin-" + i).value.trim();
       if (!ins || !a.code.trim()) return logTo($("log-" + i), "اكتب التعديل وتأكد من وجود كود.", "e");
-      logTo($("log-" + i), "جارٍ تطبيق التعديل...");
+      var pe = logTo($("log-" + i), "جارٍ تطبيق التعديل...");
       try {
-        var nf = parseFiles(await ai(a.provider, editPrompt(a, ins)));
+        var nf = parseFiles(await ai(a.provider, editPrompt(a, ins), function (n) { pe.textContent = "جارٍ الكتابة... " + n + " حرف"; }));
         if (!nf.length) throw new Error("لم يرجع الذكاء الاصطناعي ملفات.");
         setCode(i, merge(a.code, nf)); $("editin-" + i).value = "";
         logTo($("log-" + i), "عُدّل: " + nf.map(function (f) { return f.path; }).join("، "), "g");
@@ -534,4 +565,3 @@
 
   renderKeys(); renderCodes(); renderBuildSelect(); showTab(S.tab || "keys");
 })();
- 
